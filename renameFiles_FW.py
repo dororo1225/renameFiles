@@ -202,7 +202,7 @@ if not ('e_date' in locals() or 'e_file' in locals() or 'e_name' in locals()):
 
         if len(AD) != 0:
             i = 0
-            for st_mtime, fileName in sorted(GP.items()):
+            for st_mtime, fileName in sorted(AD.items()):
                 i += 1
                 newName = 'AD_' + fileID + '_' + str(i) + '.mp3'
                 os.rename(fileName, newName)
