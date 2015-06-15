@@ -130,12 +130,15 @@ for dir in dirs:
     files = os.listdir(os.getcwd())  # ディレクトリのファイル全体を取得
 
     # ファイルの更新日時を取得
-    GP ={}
-    AD ={}
+    GP = {}
+    TB = {}
+    AD = {}
     EX = {}
     for file in files:
-        if file.endswith('MP4') or file.endswith('mp4'):
+        if (file.endswith('MP4') or file.endswith('mp4')) and file.startswith('GP'):
             GP[os.stat(os.path.join(file)).st_mtime] = file
+        elif (file.endswith('MP4') or file.endswith('mp4')) and file.startswith('TB'):
+            TB[os.stat(os.path.join(file)).st_mtime] = file
         elif file.endswith('MP3') or file.endswith('mp3'):
             AD[os.stat(os.path.join(file)).st_mtime] = file
         elif file.endswith('xlsx'):
@@ -151,6 +154,18 @@ for dir in dirs:
         for st_mtime, fileName in sorted(GP.items()):
             i += 1
             newName = 'GP_' + fileID + '_' + str(i) + '.mp4'
+            os.rename(fileName, newName)
+
+    if len(TB) != 0:
+        print 'TB', TB
+        # 調査日程からfileIDを定義
+        datetime_obs = datetime.datetime.fromtimestamp(TB.items()[0][0])
+        ObsID = str(datetime_obs.year)[-2:] + str(datetime_obs.month).zfill(2) + str(datetime_obs.day).zfill(2)
+        fileID = NameID + ObsID
+        i = 0
+        for st_mtime, fileName in sorted(TB.items()):
+            i += 1
+            newName = 'TB_' + fileID + '_' + str(i) + '.mp4'
             os.rename(fileName, newName)
 
     if len(AD) != 0:
@@ -174,7 +189,7 @@ for dir in dirs:
             newName = fileID + '_' + str(i) + '.xlsx'
             os.rename(fileName, newName)
 
-    if (len(GP) != 0 or len(AD) != 0 or len(EX) != 0) and 'datetime_obs' in locals():
+    if (len(GP) != 0 or len(TB) != 0 or len(AD) != 0 or len(EX) != 0) and 'datetime_obs' in locals():
         # 調査日程・誕生日から月齢・日齢を計算
         # 日齢計算
         Age_days = (datetime_obs - datetime_birth).days  # 日齢
@@ -190,9 +205,13 @@ for dir in dirs:
         df_obs = pd.DataFrame({'Obs': [datetime_obs],
                                'AgeinDays': [Age_days],
                                'Months': [Months],
-                               'Days': [Days]},
+                               'Days': [Days],
+                               'GP': [len(GP)],
+                               'TB': [len(TB)],
+                               'AD': [len(AD)],
+                               'EX': [len(EX)]},
                                index=[idx_nid])
-        df_obs = df_obs[['Obs', 'AgeinDays', 'Months', 'Days']]
+        df_obs = df_obs[['Obs', 'AgeinDays', 'Months', 'Days', 'GP', 'TB', 'AD', 'EX']]
         df_obs = pd.concat([df, df_obs], axis=1)
 
         if os.path.isfile(desktop_path + '\\Observation.csv'):
@@ -205,6 +224,7 @@ for dir in dirs:
             df_obs = df_obs[df_obs.duplicated() == False]
         df_obs = df_obs.sort('Obs')  # 観察日順に並び替え
         df_obs.insert(0, 'ObsID', range(1, len(df_obs)+1))
+        df_obs = df_obs.sort(['id', 'Obs'])
         df_obs.to_csv(desktop_path + '\\Observation.csv', index=False)
 
         os.chdir('..')
