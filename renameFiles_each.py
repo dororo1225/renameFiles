@@ -138,9 +138,9 @@ TB = {}
 AD = {}
 EX = {}
 for file in files:
-    if (file.endswith('MP4') or file.endswith('mp4')) and file.startswith('GP'):
+    if (file.endswith('MP4') or file.endswith('mp4')) and (file.startswith('GP') or  file.startswith('GO')):
         GP[os.stat(os.path.join(file)).st_mtime] = file
-    elif (file.endswith('MP4') or file.endswith('mp4')) and file.startswith('TB'):
+    elif file.endswith('MP4') or file.endswith('mp4'):
         TB[os.stat(os.path.join(file)).st_mtime] = file
     elif file.endswith('MP3') or file.endswith('mp3'):
         AD[os.stat(os.path.join(file)).st_mtime] = file
