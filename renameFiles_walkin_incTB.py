@@ -70,8 +70,13 @@ def count_days(b, s):
     if (s.day - b.day) >= 0:
         days = s.day - b.day
     else:
-        before = s.replace(month=s.month - 1, day=b.day)
-        days = (s - before).days
+        try:
+            before = s.replace(month=s.month - 1, day=b.day)
+            days = (s - before).days
+        except ValueError:
+            days = s.day
+            # 2月は1ヶ月バックするとエラーになる時がある(誕生日が29-31日の時)
+            # なのでそうなった場合は、すでに前月の誕生日を迎えたことにする（setされた日が日数とイコールになる）
     return days
 
 
