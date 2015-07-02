@@ -214,6 +214,6 @@ else:
     # ファイル出力
     file_dir = os.getenv("HOMEDRIVE") + os.getenv("HOMEPATH") + '\\Documents' + '\\Fieldwork_data\\PostureData'
     os.chdir(file_dir)
-    csv_name = obs_id + '.csv'
+    csv_name = 'Posture_' + obs_id + '.csv'
     df.to_csv(csv_name, index=False)
     print df
